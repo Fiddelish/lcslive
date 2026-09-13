@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>Bli medlem – Laholm Combat Sports</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Ansök om medlemskap hos Laholm Combat Sports.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="signup-body">
+  <header class="signup-header">
+    <a href="index.html" class="signup-brand" aria-label="Till Laholm Combat Sports startsida">
+      <span class="signup-logo">
+        <img src="assets/logo.jpg" alt="">
+      </span>
+      <span>Laholm Combat Sports</span>
+    </a>
+    <a href="index.html" class="back-link"><span aria-hidden="true">←</span> Till startsidan</a>
+  </header>
+
+  <main class="signup-main">
+    <div class="signup-intro">
+      <p class="eyebrow">Medlemsansökan</p>
+      <h1>Bli en del av LCS</h1>
+      <p>Välj medlemskap, fyll i dina uppgifter och fortsätt sedan till säker betalning med Stripe.</p>
+      <ol class="signup-steps" aria-label="Steg i medlemsansökan">
+        <li class="active"><span>1</span> Uppgifter</li>
+        <li><span>2</span> Betalning</li>
+        <li><span>3</span> Klart</li>
+      </ol>
+    </div>
+
+    <form id="membershipForm" class="membership-form">
+      <div class="signup-content">
+        <div class="signup-form-column">
+          <fieldset class="signup-panel plan-panel">
+            <legend>1. Välj medlemskap</legend>
+
+            <div class="plan-options">
+              <label class="plan-option" data-plan="child">
+                <input type="radio" name="membership" value="child" required>
+                <span class="plan-check" aria-hidden="true"></span>
+                <span class="plan-copy">
+                  <strong>Barn</strong>
+                  <small>För barn 8–12 år</small>
+                </span>
+                <span class="plan-price"><strong>1 000 kr</strong><small>/termin</small></span>
+              </label>
+
+              <label class="plan-option" data-plan="youth">
+                <input type="radio" name="membership" value="youth" required>
+                <span class="plan-check" aria-hidden="true"></span>
+                <span class="plan-copy">
+                  <strong>Ungdom</strong>
+                  <small>För ungdomar 13–19 år</small>
+                </span>
+                <span class="plan-price"><strong>399 kr</strong><small>/månad</small></span>
+              </label>
+
+              <label class="plan-option" data-plan="adult">
+                <input type="radio" name="membership" value="adult" required>
+                <span class="plan-check" aria-hidden="true"></span>
+                <span class="plan-copy">
+                  <strong>Vuxen</strong>
+                  <small>Full tillgång till alla pass</small>
+                </span>
+                <span class="plan-price"><strong>499 kr</strong><small>/månad</small></span>
+              </label>
+            </div>
+
+            <div id="billingFrequencyGroup" class="billing-frequency" aria-labelledby="billingFrequencyHeading">
+              <h3 id="billingFrequencyHeading">Betalningsintervall</h3>
+              <div class="billing-options">
+                <label>
+                  <input type="radio" name="billingInterval" value="monthly" checked>
+                  <span><strong>Månadsvis</strong><small>Betalas varje månad</small></span>
+                </label>
+                <label>
+                  <input type="radio" name="billingInterval" value="quarterly">
+                  <span><strong>Kvartalsvis</strong><small>Tre månader per betalning</small></span>
+                </label>
+              </div>
+              <p id="billingFrequencyHelp">Välj om medlemsavgiften ska betalas varje månad eller var tredje månad.</p>
+            </div>
+          </fieldset>
+
+          <section class="signup-panel" aria-labelledby="memberDetailsHeading">
+            <h2 id="memberDetailsHeading">2. Medlemsuppgifter</h2>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="firstName">Förnamn</label>
+                <input type="text" id="firstName" name="firstName" autocomplete="given-name" required>
+              </div>
+
+              <div class="form-field">
+                <label for="lastName">Efternamn</label>
+                <input type="text" id="lastName" name="lastName" autocomplete="family-name" required>
+              </div>
+
+              <div class="form-field">
+                <label for="birthDate">Födelsedatum</label>
+                <input type="date" id="birthDate" name="birthDate" autocomplete="bday" required>
+              </div>
+
+              <div class="form-field">
+                <label for="personalNumber">Personnummer</label>
+                <input type="text" id="personalNumber" name="personalNumber" inputmode="numeric" autocomplete="off" placeholder="ÅÅMMDD-XXXX" pattern="([0-9]{6}|[0-9]{8})-?[0-9]{4}" required>
+              </div>
+
+              <div class="form-field">
+                <label for="phone">Telefonnummer</label>
+                <input type="tel" id="phone" name="phone" autocomplete="tel" placeholder="070-123 45 67" required>
+              </div>
+
+              <div class="form-field full-width">
+                <label for="email">E-post</label>
+                <input type="email" id="email" name="email" autocomplete="email" placeholder="dinmail@example.com" required>
+              </div>
+
+              <div class="form-field full-width">
+                <label for="accountPassword">Välj lösenord</label>
+                <input type="password" id="accountPassword" name="accountPassword" autocomplete="new-password" minlength="8" required>
+              </div>
+
+              <div class="form-field full-width">
+                <label for="streetAddress">Gatuadress</label>
+                <input type="text" id="streetAddress" name="streetAddress" autocomplete="street-address" required>
+              </div>
+
+              <div class="form-field">
+                <label for="postalCode">Postnummer</label>
+                <input type="text" id="postalCode" name="postalCode" autocomplete="postal-code" inputmode="numeric" placeholder="312 30" pattern="[0-9]{3}\s?[0-9]{2}" required>
+              </div>
+
+              <div class="form-field">
+                <label for="city">Ort</label>
+                <input type="text" id="city" name="city" autocomplete="address-level2" required>
+              </div>
+            </div>
+
+            <div id="guardianFields" class="guardian-fields" hidden>
+              <h3>Vårdnadshavare</h3>
+              <p>Barnmedlemskap kräver kontaktuppgifter till en vårdnadshavare.</p>
+              <div class="form-grid">
+                <div class="form-field">
+                  <label for="guardianName">Namn</label>
+                  <input type="text" id="guardianName" name="guardianName" autocomplete="name">
+                </div>
+                <div class="form-field">
+                  <label for="guardianPhone">Telefonnummer</label>
+                  <input type="tel" id="guardianPhone" name="guardianPhone" autocomplete="tel">
+                </div>
+                <div class="form-field full-width">
+                  <label for="guardianEmail">E-post</label>
+                  <input type="email" id="guardianEmail" name="guardianEmail" autocomplete="email">
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="signup-panel" aria-labelledby="safetyHeading">
+            <h2 id="safetyHeading">3. Trygghet och villkor</h2>
+
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="emergencyName">Kontaktperson vid nödfall</label>
+                <input type="text" id="emergencyName" name="emergencyName" autocomplete="name" required>
+              </div>
+              <div class="form-field">
+                <label for="emergencyPhone">Kontaktpersonens telefon</label>
+                <input type="tel" id="emergencyPhone" name="emergencyPhone" autocomplete="tel" required>
+              </div>
+            </div>
+
+            <label class="consent-row">
+              <input type="checkbox" name="termsAccepted" required>
+              <span>Jag godkänner <a href="villkor.html" target="_blank" rel="noopener">medlemsvillkoren</a>, inklusive tre månaders uppsägningstid, och har tagit del av <a href="integritetspolicy.html" target="_blank" rel="noopener">integritetspolicyn</a>.</span>
+            </label>
+
+            <label class="consent-row">
+              <input type="checkbox" name="healthConfirmed" required>
+              <span>Jag intygar att lämnade uppgifter är korrekta och meddelar coachen om skador eller medicinska begränsningar.</span>
+            </label>
+          </section>
+        </div>
+
+        <aside class="signup-summary" aria-labelledby="summaryHeading">
+          <h2 id="summaryHeading">Din beställning</h2>
+          <div class="summary-plan">
+            <div>
+              <span id="summaryPlan">Välj medlemskap</span>
+              <small id="summaryPeriodNote">Löpande medlemskap</small>
+            </div>
+            <strong id="summaryPrice">–</strong>
+          </div>
+          <div class="summary-fee">
+            <span>Startavgift för försäkring <small>Engångsavgift för ny medlem</small></span>
+            <strong>200 kr</strong>
+          </div>
+          <div class="summary-total">
+            <span>Första betalningen</span>
+            <strong id="summaryTotal">–</strong>
+          </div>
+          <p id="renewalPrice" class="renewal-price"></p>
+          <p class="summary-detail">Du skickas till Stripe för säker betalning. Betaluppgifter hanteras aldrig av LCS-webbplatsen.</p>
+          <p class="integration-note checkout-note">Ett medlemskonto skapas innan du går vidare till betalning.</p>
+          <button type="submit" id="checkoutButton" class="btn-primary checkout-button">Fortsätt till säker betalning</button>
+          <p class="secure-checkout"><span aria-hidden="true">🔒</span> Säker betalning via Stripe</p>
+          <p id="paymentStatus" class="status-message" role="status" aria-live="polite" tabindex="-1"></p>
+        </aside>
+      </div>
+    </form>
+
+    <p class="signup-login-link">Redan medlem? <a href="login.html">Logga in här</a></p>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="supabase-init.js"></script>
+
+  <script src="stripe.js"></script>
+</body>
+</html>

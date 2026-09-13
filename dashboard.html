@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard – Laholm Combat Sports</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="dash-body">
+
+  <header class="dash-header">
+    <div class="dash-logo">
+      <img src="assets/logo.jpg" alt="Laholm Combat Sports">
+    </div>
+    <nav class="dash-nav">
+      <button type="button" id="logoutBtn">Logga ut</button>
+    </nav>
+  </header>
+
+  <main class="dash-main">
+
+    <section class="dash-welcome">
+      <h1>Välkommen tillbaka, <span id="userEmail"></span></h1>
+      <p class="dash-sub">Här hittar du din medlemsstatus, schema och betalningsinfo.</p>
+    </section>
+
+    <section class="dash-card">
+      <h2>Boka pass</h2>
+      <ul class="dash-list dashboard-class-list" id="dashboardClassesList"></ul>
+      <p id="classRegistrationStatus" class="status-message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="dash-card">
+      <h2>Medlemskap</h2>
+      <p id="membershipType">Laddar...</p>
+      <p id="membershipState" class="dashboard-membership-state"></p>
+      <p id="paymentStatus">Laddar...</p>
+      <div class="dashboard-actions">
+        <button type="button" id="renewMembershipBtn" class="admin-secondary-btn">Teckna eller förläng via Stripe</button>
+        <button type="button" id="cancelMembershipBtn" class="admin-secondary-btn">Begär uppsägning</button>
+      </div>
+      <p id="membershipRequestStatus" class="status-message" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="dash-card">
+      <h2>Betalningar</h2>
+      <ul class="dash-list" id="paymentHistoryList"></ul>
+    </section>
+
+    <section class="dash-card">
+      <h2>Dina medlemsärenden</h2>
+      <ul class="dash-list" id="membershipRequestsList"></ul>
+    </section>
+
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="supabase-init.js"></script>
+
+  <script src="schedule.js"></script>
+  <script src="dashboard.js"></script>
+</body>
+</html>

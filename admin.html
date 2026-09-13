@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LCS Adminpanel</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="admin-body">
+
+  <!-- ADD MEMBER MODAL -->
+  <div id="addMemberModal" class="admin-modal">
+    <div class="admin-modal-content">
+      <h2>Ny medlem</h2>
+
+      <label>Namn</label>
+      <input type="text" id="newMemberName">
+
+      <label>E‑post</label>
+      <input type="email" id="newMemberEmail">
+
+      <label for="newMemberPersonalNumber">Personnummer</label>
+      <input type="text" id="newMemberPersonalNumber" inputmode="numeric" placeholder="ÅÅMMDD-XXXX" pattern="([0-9]{6}|[0-9]{8})-?[0-9]{4}" required>
+
+      <label>Medlemskap</label>
+      <select id="newMemberMembership">
+        <option value="Barn">Barn</option>
+        <option value="Ungdom">Ungdom</option>
+        <option value="Vuxen">Vuxen</option>
+      </select>
+
+      <label>Status</label>
+      <select id="newMemberStatus">
+        <option value="Aktiv">Aktiv</option>
+        <option value="Obetald">Obetald</option>
+        <option value="Avslutad">Avslutad</option>
+      </select>
+
+      <div class="admin-modal-actions">
+        <button type="button" class="admin-secondary-btn" id="closeAddMember">Avbryt</button>
+        <button type="button" class="admin-primary-btn" id="saveNewMember">Spara medlem</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+      <div class="admin-logo">
+        <span class="admin-logo-main">LCS</span>
+        <span class="admin-logo-sub">Adminpanel</span>
+      </div>
+
+      <nav class="admin-nav">
+        <button class="admin-nav-item active" data-view="members">
+          Medlemmar
+        </button>
+        <button class="admin-nav-item" data-view="classes">
+          Träningspass
+        </button>
+        <button class="admin-nav-item" data-view="payments">
+          Betalningar
+        </button>
+        <button class="admin-nav-item" data-view="membership-requests">
+          Medlemsärenden
+        </button>
+        <button class="admin-nav-item" data-view="trials">
+          Prova på
+        </button>
+        <button class="admin-nav-item" data-view="settings">
+          Inställningar
+        </button>
+      </nav>
+
+      <div class="admin-sidebar-footer">
+        <button type="button" id="logoutBtn" class="admin-logout-btn">
+          Logga ut
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <main class="admin-main">
+      <!-- TOPBAR -->
+      <header class="admin-topbar">
+        <div class="admin-top-left">
+          <h1 class="admin-title">Laholms Combat Sports</h1>
+          <p class="admin-subtitle">Adminpanel</p>
+        </div>
+        <div class="admin-top-right">
+          <span id="adminUserEmail" class="admin-user-email">Lokalt demoläge</span>
+        </div>
+      </header>
+
+      <!-- CONTENT VIEWS -->
+      <p id="demoBanner" class="demo-banner">Läser in anslutning...</p>
+      <p id="adminStatus" class="status-message admin-status" role="status" aria-live="polite"></p>
+
+      <section id="view-members" class="admin-view active">
+        <div class="admin-view-header">
+          <h2>Medlemmar</h2>
+          <button type="button" id="addMemberBtn" class="admin-primary-btn">+ Ny medlem</button>
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Namn</th>
+                <th>E‑post</th>
+                <th>Personnummer</th>
+                <th>Medlemskap</th>
+                <th>Status</th>
+                <th>Senaste betalning</th>
+                <th>Åtgärder</th>
+              </tr>
+            </thead>
+            <tbody id="membersTableBody">
+              <!-- Fylls via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-classes" class="admin-view">
+        <div class="admin-view-header">
+          <h2>Träningspass</h2>
+          <button type="button" id="addClassBtn" class="admin-primary-btn">+ Nytt pass</button>
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Namn</th>
+                <th>Typ</th>
+                <th>Dag</th>
+                <th>Tid</th>
+                <th>Coach</th>
+                <th>Aktiv</th>
+                <th>Åtgärder</th>
+              </tr>
+            </thead>
+            <tbody id="classesTableBody">
+              <!-- JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-payments" class="admin-view">
+        <div class="admin-view-header">
+          <h2>Betalningar</h2>
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Medlem</th>
+                <th>Typ</th>
+                <th>Belopp</th>
+                <th>Datum</th>
+                <th>Metod</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="paymentsTableBody">
+              <!-- JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-trials" class="admin-view">
+        <div class="admin-view-header">
+          <h2>Prova på-förfrågningar</h2>
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Namn</th>
+                <th>E-post</th>
+                <th>Telefon</th>
+                <th>Inkommen</th>
+                <th>Status</th>
+                <th>Åtgärder</th>
+              </tr>
+            </thead>
+            <tbody id="trialsTableBody">
+              <!-- Fylls via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-membership-requests" class="admin-view">
+        <div class="admin-view-header">
+          <h2>Medlemsärenden</h2>
+        </div>
+
+        <div class="admin-table-wrapper">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Medlem</th>
+                <th>E-post</th>
+                <th>Ärende</th>
+                <th>Inkommet</th>
+                <th>Status</th>
+                <th>Åtgärder</th>
+              </tr>
+            </thead>
+            <tbody id="membershipRequestsTableBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="view-settings" class="admin-view">
+        <div class="admin-view-header">
+          <h2>Inställningar</h2>
+        </div>
+
+        <div class="admin-settings-grid">
+          <div class="admin-settings-card">
+            <h3>Klubbinfo</h3>
+            <label>Klubbnamn</label>
+            <input type="text" id="clubNameInput" value="Laholms Combat Sports" />
+
+            <label>E‑post</label>
+            <input type="email" id="clubEmailInput" value="info@laholmscombatsports.se" />
+
+            <button type="button" class="admin-primary-btn" id="saveClubSettingsBtn">
+              Spara
+            </button>
+          </div>
+
+          <div class="admin-settings-card">
+            <h3>Medlemskapstyper</h3>
+            <ul class="admin-tag-list" id="membershipTypesList">
+              <li class="admin-tag">Barn</li>
+              <li class="admin-tag">Ungdom</li>
+              <li class="admin-tag">Vuxen</li>
+            </ul>
+            <button type="button" class="admin-secondary-btn" id="editMembershipTypesBtn">
+              Redigera
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+<!-- EDIT MEMBER MODAL -->
+<div id="editMemberModal" class="admin-modal">
+  <div class="admin-modal-content">
+    <h2>Redigera medlem</h2>
+
+    <input type="hidden" id="editMemberId">
+
+    <label>Namn</label>
+    <input type="text" id="editMemberName">
+
+    <label>E‑post</label>
+    <input type="email" id="editMemberEmail">
+
+    <label for="editMemberPersonalNumber">Personnummer</label>
+    <input type="text" id="editMemberPersonalNumber" inputmode="numeric" placeholder="ÅÅMMDD-XXXX" pattern="([0-9]{6}|[0-9]{8})-?[0-9]{4}" required>
+
+    <label>Medlemskap</label>
+    <select id="editMemberMembership">
+      <option value="Barn">Barn</option>
+      <option value="Ungdom">Ungdom</option>
+      <option value="Vuxen">Vuxen</option>
+    </select>
+
+    <label>Status</label>
+    <select id="editMemberStatus">
+      <option value="Aktiv">Aktiv</option>
+      <option value="Obetald">Obetald</option>
+      <option value="Avslutad">Avslutad</option>
+    </select>
+
+    <div class="admin-modal-actions">
+      <button type="button" class="admin-secondary-btn" id="closeEditMember">Avbryt</button>
+      <button type="button" class="admin-primary-btn" id="saveEditMember">Spara ändringar</button>
+    </div>
+  </div>
+</div>
+
+<div id="participantsModal" class="admin-modal">
+  <div class="admin-modal-content">
+    <h2 id="participantsModalTitle">Deltagare</h2>
+    <p id="participantsModalDate" class="admin-subtitle"></p>
+    <ul id="participantsList" class="dash-list participants-list"></ul>
+    <div class="admin-modal-actions">
+      <button type="button" class="admin-secondary-btn" id="downloadAttendancePdf">Ladda ner PDF</button>
+      <button type="button" class="admin-primary-btn" id="saveAttendance">Spara närvaro</button>
+      <button type="button" class="admin-secondary-btn" id="closeParticipantsModal">Stäng</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD / EDIT CLASS MODAL -->
+<div id="classModal" class="admin-modal">
+  <div class="admin-modal-content">
+    <h2 id="classModalTitle">Nytt träningspass</h2>
+
+    <input type="hidden" id="classId">
+
+    <label for="className">Namn</label>
+    <input type="text" id="className">
+
+    <label for="classType">Typ</label>
+    <input type="text" id="classType" placeholder="MMA, BJJ eller Striking">
+
+    <label for="classDay">Dag</label>
+    <select id="classDay">
+      <option>Måndag</option>
+      <option>Tisdag</option>
+      <option>Onsdag</option>
+      <option>Torsdag</option>
+      <option>Fredag</option>
+      <option>Lördag</option>
+      <option>Söndag</option>
+    </select>
+
+    <label for="classTime">Tid</label>
+    <input type="time" id="classTime">
+
+    <label for="classCoach">Coach</label>
+    <input type="text" id="classCoach">
+
+    <label for="classActive">Status</label>
+    <select id="classActive">
+      <option value="true">Aktiv</option>
+      <option value="false">Inaktiv</option>
+    </select>
+
+    <div class="admin-modal-actions">
+      <button type="button" class="admin-secondary-btn" id="closeClassModal">Avbryt</button>
+      <button type="button" class="admin-primary-btn" id="saveClass">Spara pass</button>
+    </div>
+  </div>
+</div>
+
+<!-- MEMBERSHIP TYPES MODAL -->
+<div id="membershipTypesModal" class="admin-modal">
+  <div class="admin-modal-content">
+    <h2>Medlemskapstyper</h2>
+    <label for="membershipTypesInput">Typer, separerade med kommatecken</label>
+    <input type="text" id="membershipTypesInput" placeholder="Barn, Vuxen, Drop-in">
+    <div class="admin-modal-actions">
+      <button type="button" class="admin-secondary-btn" id="closeMembershipTypes">Avbryt</button>
+      <button type="button" class="admin-primary-btn" id="saveMembershipTypes">Spara typer</button>
+    </div>
+  </div>
+</div>
+
+  <!-- Gemensam schemakälla + lokalt demoläge tills Supabase är anslutet -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="supabase-init.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <script src="schedule.js"></script>
+  <script src="admin.js"></script>
+
+</body>
+</html>

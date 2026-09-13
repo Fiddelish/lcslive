@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>Logga in – Laholm Combat Sports</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="auth-body">
+
+  <div class="auth-container">
+    <div class="auth-logo">
+      <img src="assets/logo.jpg" alt="Laholm Combat Sports">
+    </div>
+
+    <h1 class="auth-title">Medlemsinloggning</h1>
+    <p class="integration-note">Logga in med e-postadressen och lösenordet som du valde när du blev medlem.</p>
+
+    <form id="loginForm" class="auth-form">
+      <label for="email">E‑post</label>
+      <input type="email" id="email" placeholder="dinmail@example.com" autocomplete="email" required>
+
+      <label for="password">Lösenord</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password" required>
+
+      <button type="submit" class="btn-primary">Logga in</button>
+    </form>
+
+    <p id="authStatus" class="status-message" role="status" aria-live="polite"></p>
+
+<p class="auth-links">
+  <button type="button" class="link-button" id="resetPassword">Glömt lösenord?</button>
+</p>
+
+<div class="auth-actions">
+  <a href="signup.html" class="btn-secondary">Bli medlem</a>
+</div>
+
+
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="supabase-init.js"></script>
+
+  <script src="auth.js"></script>
+</body>
+</html>
