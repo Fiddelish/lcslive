@@ -12,7 +12,7 @@ const summaryPeriodNote = document.getElementById("summaryPeriodNote");
 const startFee = 200;
 
 const plans = {
-  child: { name: "Barnmedlemskap", price: 1, period: "termin", recurring: false },
+  child: { name: "Barnmedlemskap", price: 3, period: "termin", recurring: false },
   youth: { name: "Ungdomsmedlemskap", price: 399, period: "månad", recurring: true },
   adult: { name: "Vuxenmedlemskap", price: 499, period: "månad", recurring: true }
 };
