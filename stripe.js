@@ -12,7 +12,7 @@ const summaryPeriodNote = document.getElementById("summaryPeriodNote");
 const startFee = 200;
 
 const plans = {
-  child: { name: "Barnmedlemskap", price: 1000, period: "termin", recurring: false },
+  child: { name: "Barnmedlemskap", price: 1, period: "termin", recurring: false },
   youth: { name: "Ungdomsmedlemskap", price: 399, period: "månad", recurring: true },
   adult: { name: "Vuxenmedlemskap", price: 499, period: "månad", recurring: true }
 };
@@ -53,19 +53,21 @@ function updateSelectedPlan() {
   updateGuardianFields();
 
   const price = plan ? billingPrice(plan, interval) : 0;
+  const currentStartFee = planKey === "child" ? 0 : startFee;
   const period = plan ? billingPeriodLabel(plan, interval) : "";
   document.getElementById("summaryPlan").textContent = plan?.name || "Välj medlemskap";
   document.getElementById("summaryPrice").textContent = plan
     ? `${price.toLocaleString("sv-SE")} kr/${period}`
     : "–";
   document.getElementById("summaryTotal").textContent = plan
-    ? `${(price + startFee).toLocaleString("sv-SE")} kr`
+    ? `${(price + currentStartFee).toLocaleString("sv-SE")} kr`
     : "–";
+  document.getElementById("summaryStartFee").textContent = `${currentStartFee.toLocaleString("sv-SE")} kr`;
   summaryPeriodNote.textContent = plan?.recurring ? "Löpande medlemskap" : "Betalning per termin";
   document.getElementById("renewalPrice").textContent = plan
     ? plan.recurring
       ? `Därefter ${price.toLocaleString("sv-SE")} kr/${period}. Startavgiften betalas bara en gång.`
-      : "Terminsavgiften betalas en gång per termin. Startavgiften betalas bara för nya medlemmar."
+      : "Terminsavgiften betalas en gång per termin. Ingen startavgift tas ut för live-testet."
     : "";
   paymentStatus.textContent = "";
   paymentStatus.classList.remove("success");
@@ -162,6 +164,63 @@ async function invokeStripeFunction(body) {
   return data;
 }
 
+async function createOrResumeMemberAccount(supabase, payload) {
+  const signUpOptions = {
+    emailRedirectTo: new URL("dashboard.html", window.location.href).href,
+    data: {
+      name: `${payload.firstName} ${payload.lastName}`,
+      phone: payload.phone,
+      birth_date: payload.birthDate,
+      personal_number: payload.personalNumber,
+      membership: plans[payload.membership].name,
+      membership_key: payload.membership,
+      billing_interval: payload.billingInterval,
+      street_address: payload.streetAddress,
+      postal_code: payload.postalCode,
+      city: payload.city,
+      guardian_name: payload.guardianName,
+      guardian_phone: payload.guardianPhone,
+      guardian_email: payload.guardianEmail,
+      emergency_name: payload.emergencyName,
+      emergency_phone: payload.emergencyPhone,
+      terms_accepted: payload.termsAccepted,
+      health_confirmed: payload.healthConfirmed
+    }
+  };
+
+  const { data, error } = await supabase.auth.signUp({
+    email: payload.email,
+    password: payload.accountPassword,
+    options: signUpOptions
+  });
+
+  if (!error) return data;
+
+  const canResumeExistingAccount = /email rate limit|rate limit.*email|already registered|already exists/i.test(
+    error.message || ""
+  );
+  if (!canResumeExistingAccount) throw error;
+
+  const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+    email: payload.email,
+    password: payload.accountPassword
+  });
+
+  if (!signInError && signInData.user) return signInData;
+  if (/email not confirmed/i.test(signInError?.message || "")) {
+    throw new Error(
+      "Kontot finns redan men e-postadressen är inte bekräftad. Öppna det första bekräftelsemejlet från Supabase och försök sedan igen."
+    );
+  }
+  if (/email rate limit|rate limit.*email/i.test(error.message || "")) {
+    throw new Error(
+      "Supabase har nått gränsen för bekräftelsemejl. Bekräfta det första mejlet om kontot redan skapats, eller försök igen senare."
+    );
+  }
+
+  throw new Error("Kontot finns redan. Kontrollera lösenordet eller logga in från medlemssidan.");
+}
+
 planInputs.forEach((input) => input.addEventListener("change", updateSelectedPlan));
 billingInputs.forEach((input) => input.addEventListener("change", updateSelectedPlan));
 birthDateInput.addEventListener("change", () => {
@@ -197,34 +256,7 @@ membershipForm.addEventListener("submit", async (event) => {
 
   try {
     const supabase = window.LCS_SUPABASE.getClient();
-    const { data, error } = await supabase.auth.signUp({
-      email: payload.email,
-      password: payload.accountPassword,
-      options: {
-        emailRedirectTo: new URL("dashboard.html", window.location.href).href,
-        data: {
-          name: `${payload.firstName} ${payload.lastName}`,
-          phone: payload.phone,
-          birth_date: payload.birthDate,
-          personal_number: payload.personalNumber,
-          membership: plans[payload.membership].name,
-          membership_key: payload.membership,
-          billing_interval: payload.billingInterval,
-          street_address: payload.streetAddress,
-          postal_code: payload.postalCode,
-          city: payload.city,
-          guardian_name: payload.guardianName,
-          guardian_phone: payload.guardianPhone,
-          guardian_email: payload.guardianEmail,
-          emergency_name: payload.emergencyName,
-          emergency_phone: payload.emergencyPhone,
-          terms_accepted: payload.termsAccepted,
-          health_confirmed: payload.healthConfirmed
-        }
-      }
-    });
-
-    if (error) throw error;
+    const data = await createOrResumeMemberAccount(supabase, payload);
     if (!data.user?.id) throw new Error("Medlemskontot kunde inte identifieras.");
 
     sessionStorage.setItem("lcsMemberEmail", payload.email);
