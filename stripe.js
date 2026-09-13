@@ -12,7 +12,7 @@ const summaryPeriodNote = document.getElementById("summaryPeriodNote");
 const startFee = 200;
 
 const plans = {
-  child: { name: "Barnmedlemskap", price: 3, period: "termin", recurring: false },
+  child: { name: "Barnmedlemskap", price: 1000, period: "termin", recurring: false },
   youth: { name: "Ungdomsmedlemskap", price: 399, period: "månad", recurring: true },
   adult: { name: "Vuxenmedlemskap", price: 499, period: "månad", recurring: true }
 };
@@ -53,7 +53,7 @@ function updateSelectedPlan() {
   updateGuardianFields();
 
   const price = plan ? billingPrice(plan, interval) : 0;
-  const currentStartFee = planKey === "child" ? 0 : startFee;
+  const currentStartFee = startFee;
   const period = plan ? billingPeriodLabel(plan, interval) : "";
   document.getElementById("summaryPlan").textContent = plan?.name || "Välj medlemskap";
   document.getElementById("summaryPrice").textContent = plan
@@ -67,7 +67,7 @@ function updateSelectedPlan() {
   document.getElementById("renewalPrice").textContent = plan
     ? plan.recurring
       ? `Därefter ${price.toLocaleString("sv-SE")} kr/${period}. Startavgiften betalas bara en gång.`
-      : "Terminsavgiften betalas en gång per termin. Ingen startavgift tas ut för live-testet."
+      : "Terminsavgiften betalas en gång per termin. Startavgiften betalas bara för nya medlemmar."
     : "";
   paymentStatus.textContent = "";
   paymentStatus.classList.remove("success");
