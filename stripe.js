@@ -12,7 +12,7 @@ const summaryPeriodNote = document.getElementById("summaryPeriodNote");
 const startFee = 200;
 
 const plans = {
-  child: { name: "Barnmedlemskap", price: 1000, period: "termin", recurring: false },
+  child: { name: "Barnmedlemskap", price: 800, period: "termin", recurring: false },
   youth: { name: "Ungdomsmedlemskap", price: 399, period: "månad", recurring: true },
   adult: { name: "Vuxenmedlemskap", price: 499, period: "månad", recurring: true }
 };
@@ -67,7 +67,7 @@ function updateSelectedPlan() {
   document.getElementById("renewalPrice").textContent = plan
     ? plan.recurring
       ? `Därefter ${price.toLocaleString("sv-SE")} kr/${period}. Startavgiften betalas bara en gång.`
-      : "Terminsavgiften betalas en gång per termin. Startavgiften betalas bara för nya medlemmar."
+      : "Denna termin kostar 800 kr. Nästa termin kostar 1 000 kr. Startavgiften betalas bara för nya medlemmar."
     : "";
   paymentStatus.textContent = "";
   paymentStatus.classList.remove("success");
