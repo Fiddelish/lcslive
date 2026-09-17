@@ -33,6 +33,19 @@ service-role-nyckeln ska endast finnas i Supabase och får aldrig läggas i repo
 Stripe-webhooken måste också vara skapad och dess signing secret (`whsec_...`)
 sparad som en Supabase-hemlighet innan betalningsstatus kan uppdateras automatiskt.
 
+## Säkerhetspolicy för webbläsaren
+
+Alla HTML-sidor använder en strikt Content Security Policy utan `unsafe-inline`
+eller `unsafe-eval`. Supabase-klienten är låst till version `2.116.0` och både
+Supabase samt jsPDF har SHA-384 SRI-hashar. När något av biblioteken uppdateras
+måste motsvarande hash uppdateras både i `integrity`-attributet och i CSP-regeln.
+
+GitHub Pages stöder inte egna HTTP-svarshuvuden. CSP och referrer-policy anges
+därför som HTML-meta. För bland annat `X-Content-Type-Options`,
+`Permissions-Policy`, `Cross-Origin-Opener-Policy` och CSP-direktivet
+`frame-ancestors` krävs en värd eller omvänd proxy som kan sätta riktiga
+HTTP-svarshuvuden.
+
 ## Innehåll
 
 - Publik startsida, medlemsansökan och prova-på-formulär
