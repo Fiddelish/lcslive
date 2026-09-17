@@ -14,17 +14,10 @@
     return localDateValue(date);
   }
 
-  function defaultEndTime(startTime) {
-    const [hours, minutes] = String(startTime || "18:00").split(":").map(Number);
-    const endMinutes = hours * 60 + minutes + 60;
-    return `${String(Math.floor(endMinutes / 60) % 24).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
-  }
-
   function normalizeClass(trainingClass) {
     return {
       ...trainingClass,
-      class_date: trainingClass.class_date || nextDateForDay(trainingClass.day),
-      end_time: trainingClass.end_time || defaultEndTime(trainingClass.time)
+      class_date: trainingClass.class_date || nextDateForDay(trainingClass.day)
     };
   }
 
