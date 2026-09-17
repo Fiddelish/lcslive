@@ -7,8 +7,8 @@ Produktionsfiler för Laholm Combat Sports webbplats och medlemsportal.
 1. Ladda upp innehållet i den här mappen till roten av ett GitHub-repository.
 2. Öppna **Settings → Pages** i GitHub.
 3. Välj **Deploy from a branch**, välj `main` och mappen `/(root)`.
-4. När sidan har publicerats använder den normalt adressen
-   `https://DITT-GITHUB-NAMN.github.io/lcslive/`.
+4. Webbplatsens produktionsadress är
+   `https://www.laholmcombatsports.com`.
 
 Alla webbplatslänkar är relativa och fungerar därför även när sidan ligger under
 ett reponamn. Filen `.nojekyll` säkerställer att GitHub serverar innehållet som en
@@ -16,14 +16,15 @@ vanlig statisk webbplats.
 
 ## Konfigurera Supabase efter publicering
 
-Använd den slutliga GitHub Pages-adressen i Supabase:
+Använd den egna domänen i Supabase:
 
-- Edge Function-hemligheten `SITE_URL` ska vara hela adressen inklusive reponamnet,
-  utan avslutande snedstreck.
-- Edge Function-hemligheten `ALLOWED_ORIGINS` ska vara enbart ursprunget,
-  exempelvis `https://DITT-GITHUB-NAMN.github.io`.
-- Auth **Site URL** ska vara hela GitHub Pages-adressen.
-- Lägg till `https://DITT-GITHUB-NAMN.github.io/lcslive/**` under Auth Redirect URLs.
+- Edge Function-hemligheten `SITE_URL` ska vara
+  `https://www.laholmcombatsports.com`.
+- Edge Function-hemligheten `ALLOWED_ORIGINS` ska innehålla
+  `https://www.laholmcombatsports.com,https://laholmcombatsports.com,https://fiddelish.github.io`.
+- Auth **Site URL** ska vara `https://www.laholmcombatsports.com`.
+- Lägg till `https://www.laholmcombatsports.com/**` och
+  `https://laholmcombatsports.com/**` under Auth Redirect URLs.
 
 Supabase används för Auth och databas. Stripe Checkout anropas genom den redan
 publicerade Edge Functionen `stripe-payments`. Stripe-hemligheter och Supabase

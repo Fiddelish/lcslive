@@ -754,8 +754,18 @@ document.getElementById("saveMembershipTypes").addEventListener("click", () => {
   showAdminStatus("Medlemskapstyperna sparades.", true);
 });
 
-document.getElementById("logoutBtn").addEventListener("click", () => {
-  window.location.href = "login.html";
+document.getElementById("logoutBtn").addEventListener("click", async () => {
+  const button = document.getElementById("logoutBtn");
+  button.disabled = true;
+
+  try {
+    if (supabase) await supabase.auth.signOut();
+  } catch (error) {
+    console.error("Utloggningen från Supabase misslyckades:", error);
+  } finally {
+    sessionStorage.removeItem("lcsPostLoginDestination");
+    window.location.replace("login.html");
+  }
 });
 
 [addMemberModal, editMemberModal, classModal, membershipTypesModal, participantsModal].forEach((modal) => {
