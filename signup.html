@@ -121,7 +121,13 @@
 
               <div class="form-field full-width">
                 <label for="accountPassword">Välj lösenord</label>
-                <input type="password" id="accountPassword" name="accountPassword" autocomplete="new-password" minlength="8" required>
+                <input type="password" id="accountPassword" name="accountPassword" autocomplete="new-password" minlength="10" maxlength="128" aria-describedby="passwordHelp" autocapitalize="none" spellcheck="false" required>
+                <small id="passwordHelp" class="field-help">Minst 10 tecken. Använd ett unikt lösenord som du inte använder på andra webbplatser.</small>
+              </div>
+
+              <div class="form-field full-width">
+                <label for="confirmPassword">Upprepa lösenord</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" autocomplete="new-password" minlength="10" maxlength="128" autocapitalize="none" spellcheck="false" required>
               </div>
 
               <div class="form-field full-width">

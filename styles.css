@@ -1064,6 +1064,12 @@ fieldset.signup-panel {
   font-weight: 600;
 }
 
+.field-help {
+  color: #9d9d9d;
+  font-size: 0.78rem;
+  line-height: 1.45;
+}
+
 .form-field input {
   width: 100%;
   min-height: 46px;

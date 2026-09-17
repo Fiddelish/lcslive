@@ -6,6 +6,8 @@ const billingFrequencyGroup = document.getElementById("billingFrequencyGroup");
 const guardianFields = document.getElementById("guardianFields");
 const guardianInputs = guardianFields.querySelectorAll("input");
 const birthDateInput = document.getElementById("birthDate");
+const accountPasswordInput = document.getElementById("accountPassword");
+const confirmPasswordInput = document.getElementById("confirmPassword");
 const paymentStatus = document.getElementById("paymentStatus");
 const checkoutButton = document.getElementById("checkoutButton");
 const summaryPeriodNote = document.getElementById("summaryPeriodNote");
@@ -112,6 +114,12 @@ function validateMembershipAge() {
   }
 
   return birthDateInput.checkValidity();
+}
+
+function validatePasswordConfirmation() {
+  const passwordsMatch = accountPasswordInput.value === confirmPasswordInput.value;
+  confirmPasswordInput.setCustomValidity(passwordsMatch ? "" : "Lösenorden matchar inte.");
+  return passwordsMatch;
 }
 
 function applicationPayload() {
@@ -227,6 +235,8 @@ birthDateInput.addEventListener("change", () => {
   validateMembershipAge();
   updateGuardianFields();
 });
+accountPasswordInput.addEventListener("input", validatePasswordConfirmation);
+confirmPasswordInput.addEventListener("input", validatePasswordConfirmation);
 birthDateInput.max = new Date().toISOString().slice(0, 10);
 
 const requestedPlan = new URLSearchParams(window.location.search).get("plan");
@@ -237,6 +247,7 @@ updateSelectedPlan();
 membershipForm.addEventListener("submit", async (event) => {
   event.preventDefault();
   validateMembershipAge();
+  validatePasswordConfirmation();
 
   if (!membershipForm.checkValidity()) {
     membershipForm.reportValidity();

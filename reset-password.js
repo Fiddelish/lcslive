@@ -10,6 +10,12 @@ function showStatus(message, success = false) {
   resetStatus.classList.toggle("success", success);
 }
 
+function validatePasswordConfirmation() {
+  const passwordsMatch = newPasswordInput.value === confirmPasswordInput.value;
+  confirmPasswordInput.setCustomValidity(passwordsMatch ? "" : "Lösenorden matchar inte.");
+  return passwordsMatch;
+}
+
 function showResetForm() {
   if (!resetForm.hidden) return;
   resetIntro.textContent = "Länken är giltig. Välj ett nytt lösenord nedan.";
@@ -52,13 +58,15 @@ async function initPasswordReset() {
   }, 2500);
 }
 
+newPasswordInput.addEventListener("input", validatePasswordConfirmation);
+confirmPasswordInput.addEventListener("input", validatePasswordConfirmation);
+
 resetForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const newPassword = newPasswordInput.value;
-  const confirmPassword = confirmPasswordInput.value;
-
-  if (newPassword !== confirmPassword) {
+  if (!validatePasswordConfirmation()) {
+    resetForm.reportValidity();
     showStatus("Lösenorden matchar inte. Försök igen.");
     return;
   }
