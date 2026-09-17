@@ -32,6 +32,25 @@ function nextClassDate(day) {
   return date.toISOString().slice(0, 10);
 }
 
+function classDateFor(trainingClass) {
+  return trainingClass.class_date || nextClassDate(trainingClass.day);
+}
+
+function formatClassDate(trainingClass) {
+  const formatted = new Intl.DateTimeFormat("sv-SE", {
+    weekday: "long",
+    day: "numeric",
+    month: "long"
+  }).format(new Date(`${classDateFor(trainingClass)}T12:00:00`));
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+}
+
+function classTimeRange(trainingClass) {
+  return trainingClass.end_time
+    ? `${trainingClass.time}–${trainingClass.end_time}`
+    : trainingClass.time;
+}
+
 function renderPaymentHistory(payments) {
   paymentHistoryList.replaceChildren();
   if (!payments.length) {
@@ -162,7 +181,7 @@ async function loadRegistrations() {
 
 async function toggleClassRegistration(trainingClass) {
   const supabase = window.LCS_SUPABASE.getClient();
-  const classDate = nextClassDate(trainingClass.day);
+  const classDate = classDateFor(trainingClass);
   const registrationKey = `${trainingClass.id}:${classDate}`;
   const isRegistered = registrations.has(registrationKey);
 
@@ -300,9 +319,9 @@ function renderDashboardClasses(classes = window.LCSSchedule.getActive()) {
     const item = document.createElement("li");
     const coach = trainingClass.coach ? ` • Coach: ${trainingClass.coach}` : "";
     const details = document.createElement("span");
-    details.textContent = `${trainingClass.name} – ${trainingClass.day} ${trainingClass.time}${coach}`;
+    details.textContent = `${trainingClass.name} – ${formatClassDate(trainingClass)} ${classTimeRange(trainingClass)}${coach}`;
     const button = document.createElement("button");
-    const isRegistered = registrations.has(`${trainingClass.id}:${nextClassDate(trainingClass.day)}`);
+    const isRegistered = registrations.has(`${trainingClass.id}:${classDateFor(trainingClass)}`);
     button.type = "button";
     button.className = "admin-secondary-btn";
     button.textContent = isRegistered ? "Avboka" : "Anmäl";

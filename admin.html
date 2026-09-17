@@ -135,8 +135,10 @@
               <tr>
                 <th>Namn</th>
                 <th>Typ</th>
+                <th>Datum</th>
                 <th>Dag</th>
-                <th>Tid</th>
+                <th>Start</th>
+                <th>Slut</th>
                 <th>Coach</th>
                 <th>Aktiv</th>
                 <th>Åtgärder</th>
@@ -316,19 +318,14 @@
     <label for="classType">Typ</label>
     <input type="text" id="classType" placeholder="MMA, BJJ eller Striking">
 
-    <label for="classDay">Dag</label>
-    <select id="classDay">
-      <option>Måndag</option>
-      <option>Tisdag</option>
-      <option>Onsdag</option>
-      <option>Torsdag</option>
-      <option>Fredag</option>
-      <option>Lördag</option>
-      <option>Söndag</option>
-    </select>
+    <label for="classDate">Datum</label>
+    <input type="date" id="classDate">
 
-    <label for="classTime">Tid</label>
+    <label for="classTime">Starttid</label>
     <input type="time" id="classTime">
+
+    <label for="classEndTime">Sluttid</label>
+    <input type="time" id="classEndTime">
 
     <label for="classCoach">Coach</label>
     <input type="text" id="classCoach">

@@ -1,10 +1,37 @@
 (function createScheduleStore() {
   const storageKey = "lcsDemoClasses";
   const dayOrder = ["Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag", "Söndag"];
+  const dayNumbers = { "Söndag": 0, "Måndag": 1, "Tisdag": 2, "Onsdag": 3, "Torsdag": 4, "Fredag": 5, "Lördag": 6 };
+
+  function localDateValue(date) {
+    const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+    return localDate.toISOString().slice(0, 10);
+  }
+
+  function nextDateForDay(day) {
+    const date = new Date();
+    date.setDate(date.getDate() + (dayNumbers[day] - date.getDay() + 7) % 7);
+    return localDateValue(date);
+  }
+
+  function defaultEndTime(startTime) {
+    const [hours, minutes] = String(startTime || "18:00").split(":").map(Number);
+    const endMinutes = hours * 60 + minutes + 60;
+    return `${String(Math.floor(endMinutes / 60) % 24).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
+  }
+
+  function normalizeClass(trainingClass) {
+    return {
+      ...trainingClass,
+      class_date: trainingClass.class_date || nextDateForDay(trainingClass.day),
+      end_time: trainingClass.end_time || defaultEndTime(trainingClass.time)
+    };
+  }
+
   const defaultClasses = [
-    { id: "class-1", name: "MMA", type: "MMA", day: "Måndag", time: "18:00", coach: "LCS Coach", active: true },
-    { id: "class-2", name: "BJJ", type: "BJJ", day: "Tisdag", time: "18:00", coach: "LCS Coach", active: true },
-    { id: "class-3", name: "Barnpass", type: "MMA", day: "Lördag", time: "10:00", coach: "LCS Coach", active: true }
+    normalizeClass({ id: "class-1", name: "MMA", type: "MMA", day: "Måndag", time: "18:00", end_time: "19:30", coach: "LCS Coach", active: true }),
+    normalizeClass({ id: "class-2", name: "BJJ", type: "BJJ", day: "Tisdag", time: "18:00", end_time: "19:30", coach: "LCS Coach", active: true }),
+    normalizeClass({ id: "class-3", name: "Barnpass", type: "MMA", day: "Lördag", time: "10:00", end_time: "11:00", coach: "LCS Coach", active: true })
   ];
 
   let cachedClasses = defaultClasses;
@@ -14,7 +41,7 @@
     try {
       const saved = localStorage.getItem(storageKey);
       const parsed = saved ? JSON.parse(saved) : defaultClasses;
-      return Array.isArray(parsed) ? parsed : defaultClasses;
+      return Array.isArray(parsed) ? parsed.map(normalizeClass) : defaultClasses;
     } catch (error) {
       console.warn("Kunde inte läsa det lokala träningsschemat.", error);
       return defaultClasses;
@@ -23,6 +50,9 @@
 
   function sortClasses(classes) {
     return [...classes].sort((first, second) => {
+      if (first.class_date !== second.class_date) {
+        return String(first.class_date).localeCompare(String(second.class_date), "sv");
+      }
       const dayDifference = dayOrder.indexOf(first.day) - dayOrder.indexOf(second.day);
       if (dayDifference !== 0) return dayDifference;
       return String(first.time).localeCompare(String(second.time), "sv");
@@ -30,7 +60,10 @@
   }
 
   function getActive() {
-    return sortClasses(cachedClasses.filter((trainingClass) => trainingClass.active !== false));
+    const today = localDateValue(new Date());
+    return sortClasses(cachedClasses.filter((trainingClass) => (
+      trainingClass.active !== false && (!trainingClass.class_date || trainingClass.class_date >= today)
+    )));
   }
 
   async function loadFromSupabase() {
@@ -46,7 +79,7 @@
       
       if (error) throw error;
       
-      cachedClasses = data || defaultClasses;
+      cachedClasses = (data || defaultClasses).map(normalizeClass);
       localStorage.setItem(storageKey, JSON.stringify(cachedClasses));
       notifySubscribers();
     } catch (error) {

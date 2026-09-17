@@ -57,11 +57,46 @@ const dayNumbers = {
   "Fredag": 5,
   "Lördag": 6
 };
+const dayNames = ["Söndag", "Måndag", "Tisdag", "Onsdag", "Torsdag", "Fredag", "Lördag"];
+
+function toLocalDateValue(date) {
+  const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return localDate.toISOString().slice(0, 10);
+}
 
 function nextClassDate(day) {
   const date = new Date();
   date.setDate(date.getDate() + (dayNumbers[day] - date.getDay() + 7) % 7);
-  return date.toISOString().slice(0, 10);
+  return toLocalDateValue(date);
+}
+
+function classDateFor(trainingClass) {
+  return trainingClass.class_date || nextClassDate(trainingClass.day);
+}
+
+function dayForDate(dateValue) {
+  return dayNames[new Date(`${dateValue}T12:00:00`).getDay()];
+}
+
+function formatClassDate(dateValue) {
+  if (!dateValue) return "–";
+  return new Intl.DateTimeFormat("sv-SE", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  }).format(new Date(`${dateValue}T12:00:00`));
+}
+
+function defaultEndTime(startTime) {
+  const [hours, minutes] = String(startTime || "18:00").split(":").map(Number);
+  const endMinutes = hours * 60 + minutes + 60;
+  return `${String(Math.floor(endMinutes / 60) % 24).padStart(2, "0")}:${String(endMinutes % 60).padStart(2, "0")}`;
+}
+
+function classTimeRange(trainingClass) {
+  return trainingClass.end_time
+    ? `${trainingClass.time}–${trainingClass.end_time}`
+    : trainingClass.time;
 }
 
 function showConnectionStatus() {
@@ -157,12 +192,16 @@ function renderClasses() {
   const tableBody = document.getElementById("classesTableBody");
   tableBody.replaceChildren();
 
-  classes.forEach((trainingClass) => {
+  [...classes]
+    .sort((first, second) => `${classDateFor(first)} ${first.time}`.localeCompare(`${classDateFor(second)} ${second.time}`, "sv"))
+    .forEach((trainingClass) => {
     const row = document.createElement("tr");
     appendCell(row, trainingClass.name);
     appendCell(row, trainingClass.type);
+    appendCell(row, formatClassDate(classDateFor(trainingClass)));
     appendCell(row, trainingClass.day);
     appendCell(row, trainingClass.time);
+    appendCell(row, trainingClass.end_time || "–");
     appendCell(row, trainingClass.coach);
     appendCell(row, trainingClass.active ? "Ja" : "Nej");
     const actions = appendCell(row, "");
@@ -363,11 +402,11 @@ const membershipTypesModal = document.getElementById("membershipTypesModal");
 const participantsModal = document.getElementById("participantsModal");
 
 async function openParticipantsModal(trainingClass) {
-  const classDate = nextClassDate(trainingClass.day);
+  const classDate = classDateFor(trainingClass);
   selectedClass = trainingClass;
   selectedClassDate = classDate;
   document.getElementById("participantsModalTitle").textContent = `${trainingClass.name} - ${trainingClass.coach || "Ingen tränare angiven"}`;
-  document.getElementById("participantsModalDate").textContent = `${trainingClass.day} ${classDate} kl. ${trainingClass.time}`;
+  document.getElementById("participantsModalDate").textContent = `${trainingClass.day} ${formatClassDate(classDate)} kl. ${classTimeRange(trainingClass)}`;
   const list = document.getElementById("participantsList");
   list.replaceChildren();
   showModal(participantsModal);
@@ -459,7 +498,7 @@ function downloadAttendancePdf() {
   const lines = [
     "Laholms Combat Sports",
     `Narvarolista: ${selectedClass.name}`,
-    `${selectedClass.day} ${selectedClassDate} kl. ${selectedClass.time}`,
+    `${selectedClass.day} ${selectedClassDate} kl. ${classTimeRange(selectedClass)}`,
     "",
     "Namn                                              Narvarande"
   ];
@@ -594,12 +633,14 @@ document.getElementById("saveEditMember").addEventListener("click", async () => 
 
 function openClassModal(id = "") {
   const trainingClass = classes.find((item) => item.id === id);
+  const startTime = trainingClass?.time || "18:00";
   document.getElementById("classModalTitle").textContent = trainingClass ? "Redigera träningspass" : "Nytt träningspass";
   document.getElementById("classId").value = trainingClass?.id || "";
   document.getElementById("className").value = trainingClass?.name || "";
   document.getElementById("classType").value = trainingClass?.type || "";
-  document.getElementById("classDay").value = trainingClass?.day || "Måndag";
-  document.getElementById("classTime").value = trainingClass?.time || "18:00";
+  document.getElementById("classDate").value = trainingClass ? classDateFor(trainingClass) : toLocalDateValue(new Date());
+  document.getElementById("classTime").value = startTime;
+  document.getElementById("classEndTime").value = trainingClass?.end_time || defaultEndTime(startTime);
   document.getElementById("classCoach").value = trainingClass?.coach || "";
   document.getElementById("classActive").value = String(trainingClass?.active ?? true);
   showModal(classModal);
@@ -612,11 +653,18 @@ document.getElementById("saveClass").addEventListener("click", async () => {
   const id = document.getElementById("classId").value;
   const name = document.getElementById("className").value.trim();
   const type = document.getElementById("classType").value.trim();
+  const classDate = document.getElementById("classDate").value;
   const time = document.getElementById("classTime").value;
+  const endTime = document.getElementById("classEndTime").value;
   const coach = document.getElementById("classCoach").value.trim();
 
-  if (!name || !type || !time || !coach) {
+  if (!name || !type || !classDate || !time || !endTime || !coach) {
     showAdminStatus("Fyll i alla uppgifter för träningspasset.");
+    return;
+  }
+
+  if (endTime <= time) {
+    showAdminStatus("Sluttiden måste vara senare än starttiden.");
     return;
   }
 
@@ -628,8 +676,10 @@ document.getElementById("saveClass").addEventListener("click", async () => {
   const values = {
     name,
     type,
-    day: document.getElementById("classDay").value,
+    class_date: classDate,
+    day: dayForDate(classDate),
     time,
+    end_time: endTime,
     coach,
     active: document.getElementById("classActive").value === "true"
   };
